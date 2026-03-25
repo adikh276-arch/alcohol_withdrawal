@@ -8,8 +8,8 @@ import { WeekNavigator } from "./WeekNavigator";
 import { LogCard } from "./LogCard";
 
 export function WithdrawalTracker() {
-  const { logs, addLog, deleteLog } = useWithdrawalLogs();
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const { logs, deleteLog } = useWithdrawalLogs();
+  const navigate = useNavigate();
   const [currentWeekStart, setCurrentWeekStart] = useState(
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
