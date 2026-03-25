@@ -136,15 +136,13 @@ export function WithdrawalTracker() {
       {/* Floating Add Button */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
         <Button
-          onClick={() => setSheetOpen(true)}
+          onClick={() => navigate("/add")}
           className="h-14 px-8 rounded-full shadow-lg shadow-primary/25 text-base font-semibold gap-2"
         >
           <Plus className="h-5 w-5" />
           Add Log
         </Button>
       </div>
-
-      <AddLogSheet open={sheetOpen} onOpenChange={setSheetOpen} onAdd={addLog} />
     </div>
   );
 }
