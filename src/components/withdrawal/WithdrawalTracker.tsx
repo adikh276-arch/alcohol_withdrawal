@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { startOfWeek, endOfWeek, isWithinInterval, format, eachDayOfInterval, isSameDay } from "date-fns";
 import { Plus, Droplets } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWithdrawalLogs } from "@/hooks/use-withdrawal-logs";
 import { WeekNavigator } from "./WeekNavigator";
 import { LogCard } from "./LogCard";
-import { AddLogSheet } from "./AddLogSheet";
 
 export function WithdrawalTracker() {
   const { logs, addLog, deleteLog } = useWithdrawalLogs();
