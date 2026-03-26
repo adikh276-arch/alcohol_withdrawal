@@ -14,6 +14,12 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Verbose logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 // Initialize schema
 const initDb = async () => {
   try {
@@ -104,17 +110,24 @@ app.get('/api/ping', (req, res) => res.send('pong'));
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../dist');
+  const distPath = path.resolve(__dirname, '../dist');
+  console.log(`Serving static files from: ${distPath}`);
   
-  // Serve static files from subpath
+  // Serve static files from both subpath and root
   app.use('/alcohol_withdrawal', express.static(distPath));
+  app.use(express.static(distPath));
 
   // Root redirect and SPA fallback
   app.get('*', (req, res) => {
-    if (req.path === '/' || req.path === '/alcohol_withdrawal') {
-      return res.redirect('/alcohol_withdrawal/');
+    if (req.path === '/' || req.path === '/alcohol_withdrawal' || req.path === '/alcohol_withdrawal/') {
+      return res.sendFile(path.join(distPath, 'index.html'));
     }
-    res.sendFile(path.join(distPath, 'index.html'));
+    
+    if (!req.path.startsWith('/api')) {
+      return res.sendFile(path.join(distPath, 'index.html'));
+    }
+    
+    res.status(404).send('Not Found');
   });
 }
 
