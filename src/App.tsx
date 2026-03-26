@@ -16,7 +16,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/alcohol_withdrawal">
         <AuthHandshake />
         <Routes>
           <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />

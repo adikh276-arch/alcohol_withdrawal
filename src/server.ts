@@ -121,5 +121,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server v1.8 running on port ${port}`);
+  console.log(`Server v1.9 running on port ${port}`);
 });
