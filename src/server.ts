@@ -26,6 +26,7 @@ const initDb = async () => {
     }
   } catch (err) {
     console.error('Schema initialization failed:', err);
+    // Don't exit process, let server start so we can see errors in logs
   }
 };
 
