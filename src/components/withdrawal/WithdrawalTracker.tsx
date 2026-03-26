@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { useWithdrawalLogs } from "@/hooks/use-withdrawal-logs";
 import { WeekNavigator } from "./WeekNavigator";
 import { LogCard } from "./LogCard";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "../LanguageSelector";
 
 export function WithdrawalTracker() {
+  const { t } = useTranslation();
   const { logs, deleteLog } = useWithdrawalLogs();
   const navigate = useNavigate();
   const [currentWeekStart, setCurrentWeekStart] = useState(
@@ -49,14 +52,17 @@ export function WithdrawalTracker() {
     <div className="min-h-screen bg-background relative pb-24">
       <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Droplets className="h-5 w-5 text-primary" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Droplets className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">{t('alcohol_withdrawal_tracker')}</h1>
+              <p className="text-xs text-muted-foreground">{t('track_symptoms_progress')}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Withdrawal Log</h1>
-            <p className="text-xs text-muted-foreground">Track symptoms & progress</p>
-          </div>
+          <LanguageSelector />
         </div>
 
         {/* Week Nav */}
@@ -95,7 +101,7 @@ export function WithdrawalTracker() {
         <div className="glass-card rounded-xl p-3 flex justify-around text-center">
           <div>
             <p className="text-lg font-bold text-foreground">{weekLogs.length}</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Entries</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('entries')}</p>
           </div>
           <div className="w-px bg-border" />
           <div>
@@ -104,14 +110,14 @@ export function WithdrawalTracker() {
                 ? new Set(weekLogs.flatMap((l) => l.symptoms)).size
                 : 0}
             </p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Symptoms</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('symptoms')}</p>
           </div>
           <div className="w-px bg-border" />
           <div>
             <p className="text-lg font-bold text-foreground">
               {weekLogs.filter((l) => l.severity === "severe" || l.severity === "high").length}
             </p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">High/Severe</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('high_severe')}</p>
           </div>
         </div>
 
@@ -121,8 +127,8 @@ export function WithdrawalTracker() {
             <div className="w-16 h-16 mx-auto rounded-2xl bg-secondary flex items-center justify-center">
               <Droplets className="h-8 w-8 text-muted-foreground/40" />
             </div>
-            <p className="text-sm text-muted-foreground">No logs this week</p>
-            <p className="text-xs text-muted-foreground/70">Tap + to add your first entry</p>
+            <p className="text-sm text-muted-foreground">{t('no_logs_this_week')}</p>
+            <p className="text-xs text-muted-foreground/70">{t('tap_plus_to_add')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -140,7 +146,7 @@ export function WithdrawalTracker() {
           className="h-14 px-8 rounded-full shadow-lg shadow-primary/25 text-base font-semibold gap-2"
         >
           <Plus className="h-5 w-5" />
-          Add Log
+          {t('add_log')}
         </Button>
       </div>
     </div>

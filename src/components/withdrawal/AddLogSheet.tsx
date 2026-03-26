@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { SYMPTOM_OPTIONS, SEVERITY_CONFIG } from "@/lib/withdrawal-types";
 import type { WithdrawalLog } from "@/lib/withdrawal-types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface AddLogSheetProps {
   open: boolean;
@@ -14,14 +15,15 @@ interface AddLogSheetProps {
   onAdd: (log: Omit<WithdrawalLog, "id">) => void;
 }
 
-const severities = Object.entries(SEVERITY_CONFIG) as [WithdrawalLog["severity"], typeof SEVERITY_CONFIG[keyof typeof SEVERITY_CONFIG]][];
-
 export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
+  const { t } = useTranslation();
   const [severity, setSeverity] = useState<WithdrawalLog["severity"]>("low");
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [heartRate, setHeartRate] = useState("");
   const [bp, setBp] = useState("");
+
+  const severities = Object.entries(SEVERITY_CONFIG) as [WithdrawalLog["severity"], typeof SEVERITY_CONFIG[keyof typeof SEVERITY_CONFIG]][];
 
   const toggleSymptom = (s: string) => {
     setSymptoms((prev) =>
@@ -53,13 +55,13 @@ export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
         <SheetHeader className="pb-4">
-          <SheetTitle className="text-lg">Log Withdrawal Symptoms</SheetTitle>
+          <SheetTitle className="text-lg">{t('log_withdrawal_symptoms_title')}</SheetTitle>
         </SheetHeader>
 
         <div className="space-y-6 pb-6">
           {/* Severity */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Severity</Label>
+            <Label className="text-sm font-medium">{t('severity')}</Label>
             <div className="grid grid-cols-4 gap-2">
               {severities.map(([key, config]) => (
                 <button
@@ -77,7 +79,7 @@ export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
                       : undefined
                   }
                 >
-                  {config.label}
+                  {t(key as any, { defaultValue: config.label })}
                 </button>
               ))}
             </div>
@@ -85,7 +87,7 @@ export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
 
           {/* Symptoms */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Symptoms</Label>
+            <Label className="text-sm font-medium">{t('symptoms_label')}</Label>
             <div className="flex flex-wrap gap-2">
               {SYMPTOM_OPTIONS.map((s) => (
                 <button
@@ -98,7 +100,7 @@ export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
                       : "bg-secondary text-secondary-foreground"
                   )}
                 >
-                  {s}
+                  {t(s.toLowerCase().replace(/ /g, '_') as any, { defaultValue: s })}
                 </button>
               ))}
             </div>
@@ -106,16 +108,16 @@ export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
 
           {/* Vitals */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Vitals (optional)</Label>
+            <Label className="text-sm font-medium">{t('vitals_optional')}</Label>
             <div className="grid grid-cols-2 gap-3">
               <Input
                 type="number"
-                placeholder="Heart rate (bpm)"
+                placeholder={t('heart_rate_placeholder')}
                 value={heartRate}
                 onChange={(e) => setHeartRate(e.target.value)}
               />
               <Input
-                placeholder="Blood pressure"
+                placeholder={t('blood_pressure_placeholder')}
                 value={bp}
                 onChange={(e) => setBp(e.target.value)}
               />
@@ -124,9 +126,9 @@ export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Notes</Label>
+            <Label className="text-sm font-medium">{t('notes_label')}</Label>
             <Textarea
-              placeholder="How are you feeling?"
+              placeholder={t('how_are_you_feeling')}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
@@ -134,7 +136,7 @@ export function AddLogSheet({ open, onOpenChange, onAdd }: AddLogSheetProps) {
           </div>
 
           <Button onClick={handleSubmit} className="w-full h-12 text-base font-semibold rounded-xl">
-            Save Log
+            {t('save_log')}
           </Button>
         </div>
       </SheetContent>
