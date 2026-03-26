@@ -11,6 +11,9 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    proxy: {
+       '/api': 'http://localhost:8080'
+    }
   },
   plugins: [react()].filter(Boolean),
   resolve: {

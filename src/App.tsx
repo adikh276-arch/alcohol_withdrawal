@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import AddLog from "./pages/AddLog.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { AuthGuard } from "@/components/AuthGuard";
+import { AuthHandshake } from "@/components/AuthHandshake";
 
 const queryClient = new QueryClient();
 
@@ -15,9 +17,10 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter basename="/alcohol_withdrawal">
+        <AuthHandshake />
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/add" element={<AddLog />} />
+          <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/add" element={<AuthGuard><AddLog /></AuthGuard>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

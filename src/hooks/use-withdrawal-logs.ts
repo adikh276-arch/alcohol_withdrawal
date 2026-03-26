@@ -1,40 +1,58 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { WithdrawalLog } from "@/lib/withdrawal-types";
 
-const STORAGE_KEY = "withdrawal-logs";
-
-function loadLogs(): WithdrawalLog[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveLogs(logs: WithdrawalLog[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-}
-
 export function useWithdrawalLogs() {
-  const [logs, setLogs] = useState<WithdrawalLog[]>(loadLogs);
+  const [logs, setLogs] = useState<WithdrawalLog[]>([]);
+  const userId = sessionStorage.getItem('user_id');
 
-  const addLog = useCallback((log: Omit<WithdrawalLog, "id">) => {
+  const fetchLogs = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const response = await fetch('/api/withdrawal', {
+        headers: { 'x-user-id': userId }
+      });
+      const data = await response.json();
+      setLogs(data);
+    } catch (err) {
+      console.error('Failed to fetch logs:', err);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  const addLog = useCallback(async (log: Omit<WithdrawalLog, "id">) => {
+    if (!userId) return;
     const newLog: WithdrawalLog = { ...log, id: crypto.randomUUID() };
-    setLogs((prev) => {
-      const updated = [newLog, ...prev];
-      saveLogs(updated);
-      return updated;
-    });
-  }, []);
+    
+    try {
+      await fetch('/api/withdrawal', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
+        body: JSON.stringify(newLog)
+      });
+      setLogs((prev) => [newLog, ...prev]);
+    } catch (err) {
+      console.error('Failed to add log:', err);
+    }
+  }, [userId]);
 
-  const deleteLog = useCallback((id: string) => {
-    setLogs((prev) => {
-      const updated = prev.filter((l) => l.id !== id);
-      saveLogs(updated);
-      return updated;
-    });
-  }, []);
+  const deleteLog = useCallback(async (id: string) => {
+    if (!userId) return;
+    try {
+      await fetch(`/api/withdrawal/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-user-id': userId }
+      });
+      setLogs((prev) => prev.filter((l) => l.id !== id));
+    } catch (err) {
+      console.error('Failed to delete log:', err);
+    }
+  }, [userId]);
 
   return { logs, addLog, deleteLog };
 }
