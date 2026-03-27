@@ -16,6 +16,6 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/dist-server ./dist-server
 COPY --from=build /app/database/schema.sql ./database/schema.sql
 
-EXPOSE 8080
+EXPOSE 80
 ENV NODE_ENV=production
 CMD ["node", "dist-server/server.cjs"]

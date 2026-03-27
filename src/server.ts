@@ -27,8 +27,8 @@ app.use((req, res, next) => {
 });
 
 // ── Health Check ─────────────────────────────────────────────────────────────
-app.get('/health', (req, res) => res.json({ status: 'ok', version: '2.0', subpath: normalizedSubpath }));
-app.get(`${normalizedSubpath}/health`, (req, res) => res.json({ status: 'ok', version: '2.0', subpath: normalizedSubpath }));
+app.get('/health', (req, res) => res.json({ status: 'ok', version: '2.1', subpath: normalizedSubpath }));
+app.get(`${normalizedSubpath}/health`, (req, res) => res.json({ status: 'ok', version: '2.1', subpath: normalizedSubpath }));
 
 // Initialize schema
 const __app_root = '/app';
