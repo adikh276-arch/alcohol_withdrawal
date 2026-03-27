@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { pool } from '@/lib/db';
 
 export function AuthHandshake() {
   const [searchParams] = useSearchParams();
@@ -18,13 +19,10 @@ export function AuthHandshake() {
           const data = await response.json();
           if (data && data.user_id) {
             sessionStorage.setItem('user_id', data.user_id);
-            // Initialize user in DB if they don't exist
-            const apiBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-            await fetch(`${apiBase}/api/user/init`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: data.user_id })
-            });
+            // Initialize user in DB directly
+            await pool.query('INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING', [data.user_id]);
+            
+            // Clear token from URL
             searchParams.delete('token');
             navigate({ search: searchParams.toString() }, { replace: true });
           } else {

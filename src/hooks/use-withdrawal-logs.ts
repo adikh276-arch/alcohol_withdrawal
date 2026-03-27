@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import type { WithdrawalLog } from "@/lib/withdrawal-types";
-import { apiFetch } from "@/lib/api";
+import { pool } from "@/lib/db";
 
 export function useWithdrawalLogs() {
   const [logs, setLogs] = useState<WithdrawalLog[]>([]);
@@ -9,11 +9,8 @@ export function useWithdrawalLogs() {
   const fetchLogs = useCallback(async () => {
     if (!userId) return;
     try {
-      const response = await apiFetch('/api/withdrawal', {
-        headers: { 'x-user-id': userId }
-      });
-      const data = await response.json();
-      setLogs(data);
+      const result = await pool.query('SELECT * FROM withdrawal_logs WHERE user_id = $1 ORDER BY timestamp DESC', [userId]);
+      setLogs(result.rows);
     } catch (err) {
       console.error('Failed to fetch logs:', err);
     }
@@ -28,14 +25,10 @@ export function useWithdrawalLogs() {
     const newLog: WithdrawalLog = { ...log, id: crypto.randomUUID() };
     
     try {
-      await apiFetch('/api/withdrawal', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-user-id': userId
-        },
-        body: JSON.stringify(newLog)
-      });
+      await pool.query(
+        'INSERT INTO withdrawal_logs (id, user_id, severity, symptoms, notes, heart_rate, blood_pressure, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+        [newLog.id, userId, newLog.severity, newLog.symptoms, newLog.notes, newLog.vitalSigns?.heartRate || null, newLog.vitalSigns?.bloodPressure || null, newLog.timestamp]
+      );
       setLogs((prev) => [newLog, ...prev]);
     } catch (err) {
       console.error('Failed to add log:', err);
@@ -45,10 +38,7 @@ export function useWithdrawalLogs() {
   const deleteLog = useCallback(async (id: string) => {
     if (!userId) return;
     try {
-      await apiFetch(`/api/withdrawal/${id}`, {
-        method: 'DELETE',
-        headers: { 'x-user-id': userId }
-      });
+      await pool.query('DELETE FROM withdrawal_logs WHERE id = $1 AND user_id = $2', [id, userId]);
       setLogs((prev) => prev.filter((l) => l.id !== id));
     } catch (err) {
       console.error('Failed to delete log:', err);
