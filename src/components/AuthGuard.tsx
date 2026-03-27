@@ -11,7 +11,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   useEffect(() => {
     if (!userId) {
-      window.location.href = '/token';
+      const apiBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+      window.location.href = `${apiBase}/token`;
     }
   }, [userId, navigate]);
 

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import type { WithdrawalLog } from "@/lib/withdrawal-types";
+import { apiFetch } from "@/lib/api";
 
 export function useWithdrawalLogs() {
   const [logs, setLogs] = useState<WithdrawalLog[]>([]);
@@ -8,7 +9,7 @@ export function useWithdrawalLogs() {
   const fetchLogs = useCallback(async () => {
     if (!userId) return;
     try {
-      const response = await fetch('/api/withdrawal', {
+      const response = await apiFetch('/api/withdrawal', {
         headers: { 'x-user-id': userId }
       });
       const data = await response.json();
@@ -27,7 +28,7 @@ export function useWithdrawalLogs() {
     const newLog: WithdrawalLog = { ...log, id: crypto.randomUUID() };
     
     try {
-      await fetch('/api/withdrawal', {
+      await apiFetch('/api/withdrawal', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -44,7 +45,7 @@ export function useWithdrawalLogs() {
   const deleteLog = useCallback(async (id: string) => {
     if (!userId) return;
     try {
-      await fetch(`/api/withdrawal/${id}`, {
+      await apiFetch(`/api/withdrawal/${id}`, {
         method: 'DELETE',
         headers: { 'x-user-id': userId }
       });
