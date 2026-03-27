@@ -26,21 +26,24 @@ export function AuthHandshake() {
             searchParams.delete('token');
             navigate({ search: searchParams.toString() }, { replace: true });
           } else {
-            const apiBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-            window.location.href = `${apiBase}/token`;
+            redirectToLogin();
           }
         } catch (error) {
           console.error('Auth check failed:', error);
-          const apiBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-          window.location.href = `${apiBase}/token`;
+          redirectToLogin();
         }
       };
       getUserId();
     } else if (!sessionStorage.getItem('user_id')) {
-      const apiBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-      window.location.href = `${apiBase}/token`;
+      redirectToLogin();
     }
   }, [searchParams, navigate]);
+
+  const redirectToLogin = () => {
+    const currentUrl = window.location.origin + (import.meta.env.BASE_URL || '/');
+    const loginUrl = `https://api.mantracare.com/user/login?redirect_url=${encodeURIComponent(currentUrl + '?token=')}`;
+    window.location.href = loginUrl;
+  };
 
   return null;
 }
