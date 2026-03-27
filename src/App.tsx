@@ -16,7 +16,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AuthHandshake />
         <Routes>
           <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
