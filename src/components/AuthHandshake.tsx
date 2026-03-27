@@ -19,10 +19,15 @@ export function AuthHandshake() {
           const data = await response.json();
           if (data && data.user_id) {
             sessionStorage.setItem('user_id', data.user_id);
-            // Initialize user in DB directly
-            await pool.query('INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING', [data.user_id]);
             
-            // Clear token from URL
+            // Initialize user in DB directly, but don't redirect on error
+            try {
+              await pool.query('INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING', [data.user_id]);
+            } catch (dbError) {
+              console.error('Database user initialization failed:', dbError);
+            }
+            
+            // Clear token from URL and proceed
             searchParams.delete('token');
             navigate({ search: searchParams.toString() }, { replace: true });
           } else {
@@ -30,7 +35,10 @@ export function AuthHandshake() {
           }
         } catch (error) {
           console.error('Auth check failed:', error);
-          redirectToLogin();
+          // Only redirect if we absolutely have no session
+          if (!sessionStorage.getItem('user_id')) {
+            redirectToLogin();
+          }
         }
       };
       getUserId();
